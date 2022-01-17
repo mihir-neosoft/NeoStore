@@ -1,0 +1,24 @@
+Section 1 - User Module	6
+    1.1 Registration
+    1.2 Login
+    1.3 Change Password
+    1.4 Forgot Password
+
+Section 2 - My Account Module	10
+    2.1 User Profile
+    2.2 Edit Profile
+    2.3 Add Address:
+    2.4 Get Address List:
+    2.5 Update Address:
+
+Section 3 - Product Module	15
+    3.1 Get Products by Categories, Color, Product Name etc.
+
+Section 4 - Cart Module	17
+    4.1 Get Card Data
+
+Section 5 - Order Module	19
+    5.1 Get Order Details
+
+Section 6 - Checkout Module	21
+    6.1 Placed Order:
