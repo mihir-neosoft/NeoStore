@@ -1,60 +1,91 @@
-import React, { useState, useEffect } from 'react'
-import { Card, Button } from 'react-bootstrap'
+import React, { useState, useEffect } from "react";
+import { Card, Button, Alert } from "react-bootstrap";
+import { getuser } from "../../../api";
 export default function Orders() {
-    const initialState = [
-        {
-            _id: 9876543211,
-            order_status: "TRANSIT",
-            order_date: Date.now(),
-            order_amount: 10900,
-            order_products: [
-                {
-                    product_name: "TABLE",
-                    product_image: "https://source.unsplash.com/random",
-                }
-            ]
-        },
-        {
-            _id: 9876543210,
-            order_status: "TRANSIT",
-            order_date: Date.now(),
-            order_amount: 60900,
-            order_products: [
-                {
-                    product_name: "BED",
-                    product_image: "https://source.unsplash.com/random",
-                },
-                {
-                    product_name: "SOFA",
-                    product_image: "https://source.unsplash.com/random",
-                }
-            ]
-        }
-    ]
-    const [data, setData] = useState([]);
-    useEffect(() => {
-        setData(initialState);
-        // eslint-disable-next-line
-    }, [])
-    return (
-        <div>
-            <Card>
+  const [orders, setOrders] = useState([]);
+  const [alertmsg, setAlertmsg] = useState(false);
+  const User = JSON.parse(localStorage.getItem("profile"));
+  useEffect(() => {
+    if (!User) setAlertmsg(true);
+    async function fetchData() {
+      try {
+        const { data } = await getuser(User.result._id);
+        // setUser(data);
+        console.log(data.orders);
+        setOrders(data.orders);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchData();
+    // eslint-disable-next-line
+  }, []);
+
+  return (
+    <div>
+      {alertmsg && (
+        <Alert
+          className="mx-4 text-center"
+          variant="danger"
+          onClose={() => setAlertmsg(false)}
+          dismissible
+        >
+          Login First !!!
+        </Alert>
+      )}
+      <Card>
+        <Card.Body>
+          <Card.Title>
+            <h3>Orders</h3>
+          </Card.Title>
+          <hr />
+          {orders &&
+            orders.map((order) => (
+              <Card key={order.order_id}>
                 <Card.Body>
-                    <Card.Title ><h3>Orders</h3></Card.Title><hr />
-                    {data.map(order =>
-                        <Card key={order._id}>
-                            <Card.Body>
-                                <h5><span style={{ color: "orange" }}>{order.order_status}</span> Order By:{order._id}</h5>
-                                <p>Placed on: {order.order_date} , Order Amount: <span style={{ color: "green" }}>{order.order_amount}</span></p><hr />
-                                {order.order_products.map((products, index) =>
-                                    <img key={index} src={products.product_image} alt={products.product_name} height={"100px"} width={"100px"} className='mx-2' />
-                                )}
-                                <hr /><Button onClick={() => console.log(order._id)}>Download Invoice as PDF</Button>
-                            </Card.Body>
-                        </Card>
-                    )}
+                  <h6>
+                    Order Status:&nbsp;
+                    <span style={{ color: "orange" }}>
+                      {order.order_status}
+                    </span>{" "}
+                    | Order Number: {order.order_id}
+                  </h6>
+                  <p>
+                    Placed on: {order.order_date.slice(4, 24)} , Order Amount:
+                    <span style={{ color: "green" }}> ${order.ordertotal}</span>
+                  </p>
+                  <hr />
+                  {order.cart.map((product, index) => (
+                    <img
+                      key={index}
+                      src={`/Neostore_Images/${product.category_name}/${product.product_name}/${product.product_image}`}
+                      alt={product.product_name}
+                      height={"100px"}
+                      width={"100px"}
+                      className="mx-2"
+                      style={{ border: "1px solid black" }}
+                    />
+                  ))}
+                  <hr />
+                  <div className="text-end">
+                    <Button
+                      className="mx-2"
+                      onClick={() => console.log(order._id)}
+                    >
+                      View Order
+                    </Button>
+                    <Button
+                      className="mx-2"
+                      onClick={() => console.log(order._id)}
+                    >
+                      Download Invoice as PDF
+                    </Button>
+                  </div>
                 </Card.Body>
-            </Card>
-        </div>
-    )
+              </Card>
+            ))}
+        </Card.Body>
+      </Card>
+    </div>
+  );
 }

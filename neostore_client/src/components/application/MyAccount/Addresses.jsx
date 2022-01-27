@@ -1,31 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
+// import { useDispatch } from 'react-redux'
+// import { useNavigate } from 'react-router-dom';
 import { Card, Modal, Row, Col, Form, Button } from 'react-bootstrap'
-// import { Card, Modal, Row, Col, Form, Button, FormControl, Dropdown, DropdownButton, InputGroup, Alert } from 'react-bootstrap'
+import { addaddress, getuser } from '../../../api/index';
+
 export default function Addresses() {
+    // const navigate = useNavigate();
+    // const dispatch = useDispatch()
     const initialState = { _id: 0, address1: "", address2: "", city: "", pincode: "", state: "", country: "", phone: "" }
-    const [data, setData] = useState([
-        {
-            _id: 9876543210,
-            address1: "4/230, Western Railway Colony,",
-            address2: "S.V. Road, Bandra(W),",
-            city: "Mumbai",
-            pincode: 400050,
-            state: "Maharashtra",
-            country: "India",
-            phone: 9769017984
-        },
-        {
-            _id: 9876543211,
-            address1: "751/17, Mahim Machhimar Nagar,",
-            address2: "S.L.Raheja Marg, Mahim(W),",
-            city: "Mumbai",
-            pincode: 400016,
-            state: "Maharashtra",
-            country: "India",
-            phone: 9820017984
-        }
-    ]);
-    // const [data, setData] = useState(initialState);
+    const [data, setData] = useState([initialState]);
     const [editdata, setEditdata] = useState(initialState);
     const [newdata, setNewdata] = useState(initialState);
     const [verror, setVerror] = useState(initialState);
@@ -33,17 +16,23 @@ export default function Addresses() {
     const [newmodal, setNewmodal] = useState(false)
     const regForphone = RegExp('^((\\+91-?)|0)?[0-9]{10}$');
     const regForpincode = RegExp('^[1-9][0-9]{5}$'); // eslint-disable-next-line
-    const regForaddress = RegExp('^[0-9\\\/# ,a-zA-Z]+[ ,]+[0-9\\\/#, a-zA-Z]{1,}$');
+    const regForaddress = RegExp('^[0-9\\\/# ,a-zA-Z]+[ . , ( )]+[0-9\\\/#, a-zA-Z]{1,}$');
     const user = JSON.parse(localStorage.getItem("profile"));
-    // console.log(user.result);
+    console.log(user.result._id);
     useEffect(() => {
-        if (user) {
-            // setData(user.result);
-            // setNewdata(user.result);
+        async function fetchData() {
+            if (user) {
+                try {
+                    const { data } = await getuser(user.result._id);
+                    console.log(data);
+                    setData(data.addresses);
+                } catch (error) {
+                    console.log(error);
+                }
+            } else { console.log("login first !"); }
         }
-        else { console.log("login first !"); }
-        // eslint-disable-next-line
-    }, []);
+        fetchData(); // eslint-disable-next-line
+    }, [data]);
     const handleInputChange = (event) => {
         const { name, value } = event.target;
         switch (name) {
@@ -65,23 +54,26 @@ export default function Addresses() {
         setNewdata({ ...newdata, [name]: value });
     }
     const handleValidate = (errors) => {
-        let validate = (errors.first_name === "" && errors.last_name === "" && errors.phone === "" && errors.email === "") ? true : false;
+        let validate = (errors.address1 === "" && errors.address2 === "" && errors.city === "" && errors.pincode === "" && errors.state === "" && errors.country === "" && errors.phone === "") ? true : false;
         return validate;
     }
     const handleNewSubmit = (event) => {
         event.preventDefault();
         console.log("new address request");
         if (handleValidate(verror)) {
-            if (newdata.first_name !== "" && newdata.last_name !== "" && newdata.phone !== "" && newdata.email !== "" && newdata.gender !== "") {
-                // dispatch(editProfile(newdata));
-                setData(newdata);
+            if (newdata.address1 !== "" && newdata.address2 !== "" && newdata.city !== "" && newdata.pincode !== "" && newdata.state !== "" && newdata.country !== "" && newdata.phone !== "") {
+                newdata._id = Math.floor(Math.random() * 1000000);
+                addaddress(newdata, user.result._id);
+                // setData(newdata);
                 setNewmodal(false);
             } else { alert("Please Fill All Fields"); }
         } else { alert("Please Enter Valid Details"); }
     }
     const handleEditSubmit = (event) => {
         event.preventDefault();
-        console.log("edit address request");
+        if (handleValidate(verror)) {
+            console.log("edit address request");
+        } else { alert("Please Enter Valid Details"); }
         setData(editdata);
         setEditmodal(false);
     }
@@ -100,7 +92,7 @@ export default function Addresses() {
             <Card>
                 <Card.Body>
                     <Card.Title ><h3>Addresses</h3></Card.Title><hr />
-                    {data.map(address =>
+                    {data && data.map(address =>
                         <Card key={address._id}>
                             <Card.Body>
                                 <p><b>Address:</b></p>
@@ -233,132 +225,3 @@ export default function Addresses() {
         </div>
     )
 }
-
-// import React, { useState, useEffect } from 'react'
-// // import { orderaddress } from '../config/Myservice'
-// import axios from 'axios'
-// // import jwt_decode from 'jwt-decode'
-// import { useNavigate } from 'react-router-dom';
-// // import { useLocation } from 'react-router-dom';
-// // import { MdSave } from 'react-icons/md'
-// import { Form, FormControl, Button, Dropdown, DropdownButton, InputGroup, Alert } from 'react-bootstrap'
-// const Apitoken = 'FIOD_ZjTY5s2akKAPBS9uvYtP1zNOr_wCO_BsOnrcT0lsZw5eH0Ror3QaTx40q8zlHQ'
-// export default function Addresses() {
-//     const navigate = useNavigate()
-//     // const location = useLocation()
-//     const [fields, setFields] = useState({ country: 'India', state: 'Maharashtra', city: 'Pune', address: '', pincode: '' })
-//     const [errors, setErrors] = useState({ country: '', state: '', city: '', address: '', pincode: '' })
-//     const [displayfields, setDisplayfields] = useState({ country: [], state: [], city: [] })
-//     const [showAlert, setShowAlert] = useState(false)
-
-//     useEffect(() => {
-//         axios.get("https://www.universal-tutorial.com/api/countries/", { headers: { Authorization: Apitoken, Accept: 'application/json' } })
-//             .then(res => { setDisplayfields({ ...displayfields, country: res.data }); })// eslint-disable-next-line
-//     }, [])
-
-//     useEffect(() => {
-//         axios.get(`https://www.universal-tutorial.com/api/states/${fields.country}`, { headers: { Authorization: Apitoken, Accept: 'application/json' } })
-//             .then(res => { setDisplayfields({ ...displayfields, state: res.data }); })// eslint-disable-next-line
-//     }, [fields.country])
-
-//     useEffect(() => {
-//         axios.get(`https://www.universal-tutorial.com/api/cities/${fields.state}`, { headers: { Authorization: Apitoken, Accept: 'application/json' } })
-//             .then(res => { setDisplayfields({ ...displayfields, city: res.data }); })// eslint-disable-next-line
-//     }, [fields.state])
-
-//     function handler(e) {
-//         setFields({ ...fields, [e.target.name]: e.target.value })
-//         if (e.target.name === "address") {
-//             if (e.target.value.length < 10) { setErrors({ ...errors, [e.target.name]: 'Address to short' }) }
-//             else { setErrors({ ...errors, [e.target.name]: '' }) }
-//         }
-//         if (e.target.name === "pincode") {
-//             if (e.target.value < 100000 || e.target.value > 999999) { setErrors({ ...errors, [e.target.name]: 'Pincode invalid' }) }
-//             else { setErrors({ ...errors, [e.target.name]: '' }) }
-//         }
-//     }
-
-//     const save = () => {
-//         let tmp = Object.keys(errors)
-//         let count = tmp.reduce((sum, ele) => sum + errors[ele].length, 0)
-//         if (count === 0) {
-//             console.log("OK")
-//             let tmp2 = Object.keys(fields)
-//             let count2 = tmp2.reduce((sum, ele) => { if (fields[ele].length === 0) { return sum + 1 } return sum }, 0)
-//             if (count2 === 0) {
-//                 // let sessiontmp = fields
-//                 // sessiontmp.email = jwt_decode(sessionStorage.getItem('_token')).email
-//                 // orderaddress({ 'buyer': location.state.email, 'orderlist': location.state.cart, 'total': location.state.total, 'address': fields })
-//                 //     .then(res => {
-//                 //         if (res.data.err === 0)
-//                 //             navigate("/myaccount/order")
-//                 //     })
-//             }
-//             else {
-//                 setShowAlert(true)
-//             }
-//         }
-//         else {
-//             setShowAlert(true)
-//         }
-//     }
-
-//     return (
-//         <div >
-//             <Alert variant="danger" onClose={() => setShowAlert(false)}
-//                 show={showAlert}
-//                 dismissible>
-//                 <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
-//                 <p>Some fields are empty not valid.</p>
-//             </Alert>
-//             <Form className='p-3' style={{ borderRadius: '10px', boxShadow: `0 4px 8px 0 rgba(0, 0, 0, 0.2)` }}>
-//                 <h2>Add new address</h2>
-//                 <hr />
-//                 <Form.Group className="mb-3">
-//                     <textarea className='w-100 p-2' name='address' onChange={handler}></textarea>
-//                     <p className="text-danger">{errors.address}</p>
-//                 </Form.Group>
-//                 <Form.Group className="mb-3">
-//                     <FormControl type="number" name='pincode' onChange={handler} placeholder="Pincode" />
-//                     <p className="text-danger">{errors.pincode}</p>
-//                 </Form.Group>
-//                 <div className="d-flex justify-content-evenly">
-//                     <InputGroup>
-//                         <DropdownButton
-//                             variant="outline-secondary"
-//                             title={fields.country === '' ? "Country" : fields.country} >
-//                             {displayfields.country.map((ele) =>
-//                                 <Dropdown.Item
-//                                     onClick={() => { setDisplayfields({ ...displayfields, state: [], city: [] }); setFields({ ...fields, country: ele.country_name }) }}>
-//                                     {ele.country_name}</Dropdown.Item>
-//                             )}
-//                         </DropdownButton>
-//                         <p className="text-danger">{errors.country}</p>
-//                     </InputGroup>
-//                     <InputGroup>
-//                         <DropdownButton variant="outline-secondary" title={fields.state === '' ? "State" : fields.state} >
-//                             {displayfields.state.map((ele) =>
-//                                 <Dropdown.Item
-//                                     onClick={() => { setDisplayfields({ ...displayfields, city: [] }); setFields({ ...fields, state: ele.state_name }) }}>
-//                                     {ele.state_name}</Dropdown.Item>
-//                             )}
-//                         </DropdownButton>
-//                         <p className="text-danger">{errors.state}</p>
-//                     </InputGroup>
-//                     <InputGroup>
-//                         <DropdownButton variant="outline-secondary" title={fields.city === '' ? "City" : fields.city} >
-//                             {displayfields.city.map((ele) =>
-//                                 <Dropdown.Item
-//                                     onClick={() => { setFields({ ...fields, city: ele.city_name }) }}>
-//                                     {ele.city_name}</Dropdown.Item>
-//                             )}
-//                         </DropdownButton>
-//                         <p className="text-danger">{errors.city}</p>
-//                     </InputGroup>
-//                 </div>
-//                 <hr />
-//                 <p><Button onClick={() => save()} variant="light" >Save</Button> <Button variant="light" onClick={() => navigate("/myaccount/address")} style={{ fontWeight: 'bolder' }}>X Cancel</Button></p>
-//             </Form >
-//         </div >
-//     )
-// }

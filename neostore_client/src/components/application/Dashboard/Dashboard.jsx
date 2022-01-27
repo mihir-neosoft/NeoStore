@@ -1,12 +1,15 @@
-import React from 'react'
-import MyCarousel from './MyCarousel'
+import React from 'react';
+import {  Container } from 'react-bootstrap';
+import CategoryCarousel from './CategoryCarousel';
 import PopularProducts from './PopularProducts'
 
 export default function Dashboard() {
     return (
         <div>
-            <MyCarousel/>
-            <PopularProducts/>
+            <Container>
+                <CategoryCarousel />
+                <PopularProducts />
+            </Container>
         </div>
     )
 }

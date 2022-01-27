@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getallusers, getuser, updateuser, deleteuser, addaddress, getalladdress, getaddress, updateaddress, deleteaddress } = require('../controller/user');
+const { getallusers, getuser, updateuser, deleteuser, addaddress, getaddress, updateaddress, deleteaddress, addtocart, getcart, ordercomplete } = require('../controller/user');
 
 // user Profile routes
 // get all user profiles only if admin.
@@ -14,15 +14,22 @@ router.delete('/:id', deleteuser);
 
 // address routes
 //create new user address.
-router.post("/:id/addaddress", addaddress);
-// get all user addresses
-router.get('/:id/address', getalladdress);
+router.post("/address/:id/addaddress", addaddress);
 // get user address
-router.get('/:id/address/:address', getaddress);
+router.get('/address/:id/address/:address', getaddress);
 // update user address
-router.put('/:id/address/:address/update', updateaddress);
+router.put('/address/:id/address/:address/update', updateaddress);
 // delete user address
-router.delete('/:id/address/:address/delete', deleteaddress);
+router.delete('/address/:id/address/:address/delete', deleteaddress);
 
+// cart
+// add to cart
+router.post("/cart/addtocart/:id", addtocart);
+// add to cart
+router.get("/cart/getcart/:id", getcart);
+
+// orders
+// add to cart
+router.post("/order/ordercomplete/:id", ordercomplete);
 
 module.exports = router;

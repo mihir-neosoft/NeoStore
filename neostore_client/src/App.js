@@ -19,6 +19,9 @@ import Products from './components/application/Product/Products';
 import ProductDetail from './components/application/Product/ProductDetail';
 import Cart from './components/application/Cart';
 import Checkout from './components/application/Checkout';
+import AddressCheckout from './components/application/AddressCheckout';
+import OrderSuccess from './components/application/OrderSuccess';
+import NotFound from './components/common/NotFound';
 
 function App() {
   return (
@@ -41,7 +44,7 @@ function App() {
 
           {/* product routes */}
           <Route path="/products" element={<Products />} />
-          <Route path="/products/:id" element={<ProductDetail />} />
+          <Route path="/productdetail/:id" element={<ProductDetail />} />
 
           {/* my account routes */}
           <Route path="/myaccount" element={<MyAccount />} >
@@ -54,7 +57,10 @@ function App() {
           {/* order */}
           <Route path="/orders" element={<Orders />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/addresscheckout" element={<AddressCheckout />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/ordersuccess" element={<OrderSuccess />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />
       </BrowserRouter>

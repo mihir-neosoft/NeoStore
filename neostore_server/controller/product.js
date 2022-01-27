@@ -47,17 +47,75 @@ const getallcategory = async (req, res) => {
         res.status(404).json({ message: error.message });
     }
 }
-
+// create new product
+const addproduct = async (req, res) => {
+    const { product_name, product_image, product_description, product_subimages, product_cost, product_rating, product_rating_count, color_id, category_id } = req.body;
+    try {
+        console.log(product_name, product_image, product_description, product_subimages, product_cost, product_rating, product_rating_count, color_id, category_id);
+        const existingProduct = await Product.findOne({ product_name });
+        if (existingProduct) return res.status(400).json({ message: "Product already exist" });
+        const result = await Product.create({ product_name, product_image, product_description, product_subimages, product_cost, product_rating, product_rating_count, color_id, category_id });
+        console.log(result);
+        res.status(200).json({ result });
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
+}
 // get all products
 const getallproducts = async (req, res) => {
     try {
-        console.log("get all products");
-        const allproducts = await Product.find().populate(["color_id", "category_id"]).sort({ _id: -1 });
+        // console.log("get all products");
+        const allproducts = await Product.find().populate(["color_id", "category_id"]);
         res.status(200).json(allproducts);
     } catch (error) {
         res.status(404).json({ message: error.message });
     }
 }
+// get product
+const getproduct = async (req, res) => {
+    const { id } = req.params;
+    // console.log(id);
+    try {
+        const product = await Product.findOne({ _id: id }).populate(["color_id", "category_id"]);
+        res.status(200).json(product);
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
+}
+// color category filter
+const filterproduct = async (req, res) => {
+    console.log("filter");
+    console.log(req.body);
+    const { category_id, color_id } = req.body;
+
+    try {
+        if (color_id.length !== 0 && category_id.length === 0) {
+            console.log(color_id);
+            const product = await Product.find({ color_id }).populate(["color_id", "category_id"]);
+            res.status(200).json(product);
+        }
+        else if (category_id.length !== 0 && color_id.length === 0) {
+            console.log(category_id);
+            const product = await Product.find({ category_id }).populate(["color_id", "category_id"]);
+            res.status(200).json(product);
+        }
+        else if (category_id.length === 0 && color_id.length === 0) {
+            console.log(category_id, color_id);
+            const product = await Product.find({}).populate(["color_id", "category_id"]);
+            res.status(200).json(product);
+        }
+        else {
+            const product = await Product.find({ category_id, color_id }).populate(["color_id", "category_id"]);
+            res.status(200).json(product);
+        }
+        // const product = await Product.find({ category_id, color_id }).populate(["color_id", "category_id"]);
+        // res.status(200).json(product);
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
+}
+
+
 // get products by category
 const getproductsbycategory = async (req, res) => {
     try {
@@ -82,29 +140,6 @@ const getproductsbyname = async (req, res) => {
         res.status(404).json({ message: error.message });
     }
 }
-// single product routes
-// get product
-const getproduct = async (req, res) => {
-    try {
-        console.log("get product");
-    } catch (error) {
-        res.status(404).json({ message: error.message });
-    }
-}
-// create new product
-const addproduct = async (req, res) => {
-    const { product_name, product_image, product_description, product_subimages, product_cost, product_rating, product_rating_count, color_id, category_id } = req.body;
-    try {
-        console.log(product_name, product_image, product_description, product_subimages, product_cost, product_rating, product_rating_count, color_id, category_id);
-        const existingProduct = await Product.findOne({ product_name });
-        if (existingProduct) return res.status(400).json({ message: "Product already exist" });
-        const result = await Product.create({ product_name, product_image, product_description, product_subimages, product_cost, product_rating, product_rating_count, color_id, category_id });
-        console.log(result);
-        res.status(200).json({ result });
-    } catch (error) {
-        res.status(404).json({ message: error.message });
-    }
-}
 // update product
 const updateproduct = async (req, res) => {
     try {
@@ -122,4 +157,4 @@ const deleteproduct = async (req, res) => {
     }
 }
 
-module.exports = { getallproducts, getproductsbycategory, getproductsbycolor, getproductsbyname, getproduct, addproduct, updateproduct, deleteproduct, addcolor, getallcolor, addcategory, getallcategory };
+module.exports = { getallproducts, getproductsbycategory, getproductsbycolor, getproductsbyname, getproduct, addproduct, updateproduct, deleteproduct, addcolor, getallcolor, addcategory, getallcategory, filterproduct };

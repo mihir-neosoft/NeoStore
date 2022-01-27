@@ -22,14 +22,21 @@ const authRoute = require('./routes/auth');
 const userRoute = require('./routes/user');
 const productRoute = require('./routes/product');
 const tempRoute = require('./routes/temp');
+const extraRoute = require('./routes/extra');
 // 
 app.use('/api/auth', authRoute);
 app.use('/api/user', userRoute);
 app.use('/api/product', productRoute);
 app.use('/api/temp', tempRoute);
+app.use('/api/extra', extraRoute);
 
 // Server Index Page.
 app.get('/', (req, res) => { res.status(200).json({ message: "Server Running" }) });
+app.post('/rides', (req, res) => {
+    const { email, password } = req.body;
+    console.log(email, password);
+    res.status(200).json({ message: "Server Running" })
+});
 
 // Host Server
 app.listen(PORT, (err) => {

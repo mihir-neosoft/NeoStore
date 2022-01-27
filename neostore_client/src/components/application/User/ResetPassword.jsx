@@ -15,7 +15,7 @@ export default function ResetPassword() {
 
     useEffect(() => {
         if (user) {
-            // navigate('/');
+            navigate('/');
         }// eslint-disable-next-line
     }, [user]);
 
